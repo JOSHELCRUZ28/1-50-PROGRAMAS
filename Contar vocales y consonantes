@@ -1,0 +1,41 @@
+  GNU nano 7.2                                           ProAct25.cpp                                                     #include <iostream>
+#include <cctype>  // Para usar la función tolower() y toupper()
+
+using namespace std;
+
+int main() {
+    string texto;
+
+    // Pedir al usuario una cadena
+    cout << "Introduce una cadena de texto: ";
+    getline(cin, texto);
+
+    // Variables para contar vocales y consonantes
+    int vocales = 0;
+    int consonantes = 0;
+
+    // Recorrer cada carácter de la cadena
+    for (char c : texto) {
+        // Convertir el carácter a minúscula para hacer la comparación insensible a mayúsculas
+        c = tolower(c);
+
+        // Comprobar si es una letra
+        if (isalpha(c)) {
+            // Comprobar si el carácter es una vocal
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u') {
+                vocales++;
+                vocales++;
+            }
+            // Comprobar si el carácter es una consonante
+            else {
+                consonantes++;
+            }
+        }
+    }
+
+    // Mostrar los resultados
+    cout << "Número de vocales: " << vocales << endl;
+    cout << "Número de consonantes: " << consonantes << endl;
+
+    return 0;
+}
