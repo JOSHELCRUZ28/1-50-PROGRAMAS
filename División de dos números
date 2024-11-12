@@ -1,0 +1,25 @@
+  GNU nano 7.2                                           ProAct5.cpp                                                    #include <iostream>
+using namespace std;
+
+int main() {
+    float num1, num2, division;
+
+    // Solicitar al usuario los dos números
+    cout << "Ingrese el primer número (dividendo): ";
+    cin >> num1;
+    cout << "Ingrese el segundo número (divisor): ";
+    cin >> num2;
+
+    // Verificar que el divisor no sea cero
+    if (num2 != 0) {
+        // Realizar la división
+        division = num1 / num2;
+        // Mostrar el resultado
+        cout << "La división de " << num1 << " entre " << num2 << " es: " << division << endl;
+    } else {
+        // Mensaje de error si el divisor es cero
+        cout << "Error: No se puede dividir entre cero." << endl;
+    }
+
+    return 0;
+}
