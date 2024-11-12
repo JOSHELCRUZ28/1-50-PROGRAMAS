@@ -1,0 +1,23 @@
+  GNU nano 7.2                                           ProAct7.cpp                                                    #include <iostream>
+using namespace std;
+
+int factorial(int n) {
+    if (n == 0 || n == 1) {
+        return 1; // El factorial de 0 o 1 es 1
+    }
+    return n * factorial(n - 1); // Llamada recursiva
+}
+
+int main() {
+    int num;
+    cout << "Introduce un número para calcular su factorial: ";
+    cin >> num;
+
+    if (num < 0) {
+        cout << "El factorial no está definido para números negativos." << endl;
+    } else {
+        cout << "El factorial de " << num << " es: " << factorial(num) << endl;
+    }
+
+    return 0;
+}
