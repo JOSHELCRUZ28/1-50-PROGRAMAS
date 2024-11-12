@@ -1,0 +1,68 @@
+  GNU nano 7.2                                           ProAct28.cpp
+#include <iostream>
+using namespace std;
+
+void establecerBit(int &num, int pos) {
+    num |= (1 << pos);  // Establecer el bit en la posición 'pos' a 1
+}
+
+void borrarBit(int &num, int pos) {
+    num &= ~(1 << pos);  // Borrar el bit en la posición 'pos' (ponerlo en 0)
+}
+
+void alternarBit(int &num, int pos) {
+    num ^= (1 << pos);  // Alternar el bit en la posición 'pos' (cambiarlo de 0 a 1 o de 1 a 0)
+}
+
+void mostrarBinario(int num) {
+    for (int i = 31; i >= 0; --i) {
+        cout << ((num >> i) & 1);  // Mostrar cada bit, de izquierda a derecha
+    }
+    cout << endl;
+}
+
+int main() {
+    int num, pos, opcion;
+
+    // Pedir al usuario un número y la posición del bit
+    cout << "Introduce un número entero: ";
+    cin >> num;
+
+    cout << "Introduce la posición del bit (0-31): ";
+    cin >> pos;
+
+    // Mostrar el número en binario antes de cualquier operación
+    cout << "Número original en binario: ";
+    mostrarBinario(num);
+
+    // Menú de operaciones
+    cout << "Selecciona una operación:" << endl;
+    cout << "1. Establecer el bit en la posición " << pos << endl;
+    cout << "2. Borrar el bit en la posición " << pos << endl;
+    cout << "3. Alternar el bit en la posición " << pos << endl;
+    cout << "Opción: ";
+    cin >> opcion;
+
+    // Realizar la operación seleccionada
+    switch (opcion) {
+        case 1:
+            establecerBit(num, pos);
+            cout << "Número después de establecer el bit: ";
+            mostrarBinario(num);
+            break;
+        case 2:
+            borrarBit(num, pos);
+            cout << "Número después de borrar el bit: ";
+            mostrarBinario(num);
+            break;
+        case 3:
+            alternarBit(num, pos);
+            cout << "Número después de alternar el bit: ";
+            mostrarBinario(num);
+            break;
+        default:
+            cout << "Opción inválida." << endl;
+    }
+
+    return 0;
+}
