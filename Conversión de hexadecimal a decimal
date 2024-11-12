@@ -1,0 +1,52 @@
+  GNU nano 7.2                                           ProAct42.cpp
+#include <iostream>
+#include <cmath>
+#include <cctype>  // Para usar la función isdigit() y tolower()
+
+using namespace std;
+
+// Función para convertir un número hexadecimal a decimal
+int hexadecimalADecimal(string hex) {
+    int decimal = 0;
+    int longitud = hex.length();
+
+    // Recorrer el número hexadecimal de izquierda a derecha
+    for (int i = 0; i < longitud; i++) {
+        char digito = tolower(hex[i]);  // Convertimos a minúscula para facilitar el manejo
+        int valor;
+
+        // Verificamos si el carácter es un dígito o una letra
+        if (isdigit(digito)) {
+            valor = digito - '0';  // Convierte el carácter '0'-'9' al valor entero correspondiente
+        } else if (digito >= 'a' && digito <= 'f') {
+            valor = digito - 'a' + 10;  // Convierte la letra 'a'-'f' a su valor correspondiente (10-15)
+        } else {
+            cout << "Carácter no válido en número hexadecimal." << endl;
+            return -1;  // Si el carácter no es válido, se retorna un error
+        }
+        // Calculamos el valor correspondiente en base 10 y lo sumamos
+        decimal += valor * pow(16, longitud - 1 - i);
+    }
+
+    return decimal;
+}
+
+int main() {
+    string hex;
+
+    // Solicitar al usuario un número hexadecimal
+    cout << "Introduce un número hexadecimal: ";
+    cin >> hex;
+
+    // Convertir el número hexadecimal a decimal
+    int decimal = hexadecimalADecimal(hex);
+
+    // Verificar si la conversión fue exitosa
+    if (decimal != -1) {
+        // Mostrar el resultado
+        cout << "El número hexadecimal " << hex << " en decimal es: " << decimal << endl;
+    }
+
+    return 0;
+}
+
