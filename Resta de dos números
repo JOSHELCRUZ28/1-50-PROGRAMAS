@@ -1,0 +1,23 @@
+  GNU nano 7.2                                           ProAct3.cpp                                                    #include <iostream>
+using namespace std;
+
+int main() {
+    int num1, num2, resta;
+
+    // Solicitar al usuario los dos números
+    cout << "Ingrese el primer número: ";
+    cin >> num1;
+    cout << "Ingrese el segundo número: ";
+    cin >> num2;
+
+    // Realizar la resta
+    resta = num1 - num2;
+
+    // Mostrar el resultado
+    cout << "La resta de " << num1 << " menos " << num2 << " es: " << resta << endl;
+
+    return 0;
+}
+
+
+
