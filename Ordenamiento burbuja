@@ -1,0 +1,55 @@
+  GNU nano 7.2                                          ProAct16.cpp                                                    #include <iostream>
+using namespace std;
+
+void ordenamientoBurbuja(int arr[], int n) {
+    // Bucle para controlar las pasadas
+    for (int i = 0; i < n - 1; i++) {
+        // En cada pasada, el elemento más grande "burbujea" hasta el final
+        for (int j = 0; j < n - i - 1; j++) {
+            // Si el elemento actual es mayor que el siguiente, los intercambiamos
+            if (arr[j] > arr[j + 1]) {
+                // Intercambio de elementos
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void mostrarArreglo(int arr[], int n) {
+    // Mostrar el arreglo
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+}
+int main() {
+    int n;
+
+    // Pedir al usuario la cantidad de elementos en el arreglo
+    cout << "Introduce el número de elementos en el arreglo: ";
+    cin >> n;
+
+    // Crear el arreglo
+    int arr[n];
+
+    // Pedir los elementos del arreglo
+    cout << "Introduce los elementos del arreglo: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    // Mostrar el arreglo original
+    cout << "Arreglo original: ";
+    mostrarArreglo(arr, n);
+
+    // Llamar a la función de ordenamiento burbuja
+    ordenamientoBurbuja(arr, n);
+
+    // Mostrar el arreglo ordenado
+    cout << "Arreglo ordenado: ";
+    mostrarArreglo(arr, n);
+
+    return 0;
+}
