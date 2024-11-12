@@ -1,0 +1,28 @@
+  GNU nano 7.2                                           ProAct30.cpp
+#include <iostream>
+using namespace std;
+
+// Función para calcular el MCD utilizando el algoritmo de Euclides
+int mcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;  // Calculamos el residuo
+        a = temp;   // Asignamos b a a
+    }
+    return a;  // Cuando b es 0, a contiene el MCD
+}
+
+int main() {
+    int num1, num2;
+
+    cout << "Introduce el primer número: ";
+    cin >> num1;
+
+    cout << "Introduce el segundo número: ";
+    cin >> num2;
+
+    // Llamamos a la función mcd y mostramos el resultado
+    cout << "El Máximo Común Divisor (MCD) de " << num1 << " y " << num2 << " es: " << mcd(num1, num2) << endl;
+
+    return 0;
+}
