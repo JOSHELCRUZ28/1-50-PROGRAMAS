@@ -1,0 +1,21 @@
+  GNU nano 7.2                                           ProAct4.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int num1, num2, producto;
+
+    // Solicitar al usuario los dos números
+    cout << "Ingrese el primer número: ";
+    cin >> num1;
+    cout << "Ingrese el segundo número: ";
+    cin >> num2;
+
+    // Realizar la multiplicación
+    producto = num1 * num2;
+
+    // Mostrar el resultado
+    cout << "El producto de " << num1 << " y " << num2 << " es: " << producto << endl;
+
+    return 0;
+}
