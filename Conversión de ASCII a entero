@@ -1,0 +1,24 @@
+  GNU nano 7.2                                           ProAct22.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    char asciiCaract;
+
+    // Pedir al usuario que ingrese un carácter
+    cout << "Introduce un carácter: ";
+    cin >> asciiCaract;
+
+    // Convertir el carácter a su valor entero ASCII
+    int valorASCII = (int)asciiCaract;
+
+    // Si el carácter es un dígito numérico, convertirlo a su valor entero
+    if (asciiCaract >= '0' && asciiCaract <= '9') {
+        int valorEntero = asciiCaract - '0';  // Convierte el carácter '0'-'9' a un valor numérico
+        cout << "El carácter '" << asciiCaract << "' es el valor entero: " << valorEntero << endl;
+    } else {
+        cout << "El valor ASCII de '" << asciiCaract << "' es: " << valorASCII << endl;
+    }
+
+    return 0;
+}
