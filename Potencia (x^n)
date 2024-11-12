@@ -1,0 +1,46 @@
+  GNU nano 7.2                                           ProAct32.cpp
+#include <iostream>
+using namespace std;
+
+// Función para calcular la potencia usando el método simple
+double potenciaSimple(double x, int n) {
+    double resultado = 1;
+    for (int i = 1; i <= n; i++) {
+        resultado *= x;  // Multiplicamos x por sí mismo n veces
+    }
+    return resultado;
+}
+
+// Función para calcular la potencia usando exponenciación rápida (método eficiente)
+double potenciaRapida(double x, int n) {
+    double resultado = 1;
+    while (n != 0) {
+        if (n % 2 == 1) {  // Si n es impar
+            resultado *= x;
+        }
+        x *= x;  // Elevamos x al cuadrado
+        n /= 2;  // Dividimos n entre 2
+    }
+    return resultado;
+}
+
+int main() {
+    double x;
+    int n;
+
+    cout << "Introduce el valor de x (base): ";
+    cin >> x;
+
+    cout << "Introduce el valor de n (exponente): ";
+    cin >> n;
+
+    // Usamos el método simple para calcular la potencia
+    double resultadoSimple = potenciaSimple(x, n);
+    cout << "Resultado usando el método simple: " << resultadoSimple << endl;
+
+    // Usamos el método eficiente para calcular la potencia
+    double resultadoRapido = potenciaRapida(x, n);
+    cout << "Resultado usando exponenciación rápida: " << resultadoRapido << endl;
+
+    return 0;
+}
