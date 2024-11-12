@@ -1,0 +1,36 @@
+  GNU nano 7.2                                           ProAct49.cpp                                                     #include <iostream>
+#include <string>  // Para leer cadenas de texto
+
+using namespace std;
+
+int main() {
+    int entero;
+    float flotante;
+    double doble;
+    string cadena;
+
+    // Leer un número entero
+    cout << "Introduce un número entero: ";
+    cin >> entero;
+
+    // Leer un número de punto flotante
+    cout << "Introduce un número flotante: ";
+    cin >> flotante;
+
+    // Leer un número doble
+    cout << "Introduce un número doble: ";
+    cin >> doble;
+
+    // Leer una cadena de texto
+    cin.ignore();  // Ignorar el salto de línea previo
+    cout << "Introduce una cadena de texto: ";
+    getline(cin, cadena);  // Usamos getline para leer una línea completa
+
+    // Mostrar los datos introducidos
+    cout << "El número entero es: " << entero << endl;
+    cout << "El número flotante es: " << flotante << endl;
+    cout << "El número doble es: " << doble << endl;
+    cout << "La cadena de texto es: " << cadena << endl;
+
+    return 0;
+}
