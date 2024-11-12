@@ -1,0 +1,33 @@
+  GNU nano 7.2                                           ProAct48.cpp
+#include <iostream>
+#include <chrono>  // Para usar las funciones de tiempo
+
+using namespace std;
+using namespace chrono;
+
+// Ejemplo de función cuya ejecución se quiere medir
+void ejemploFuncion() {
+    // Simulación de una tarea que toma tiempo
+    for (int i = 0; i < 1000000; ++i) {
+        // Hacer algo (en este caso solo un bucle vacío)
+    }
+}
+
+int main() {
+    // Capturamos el tiempo de inicio
+    auto inicio = high_resolution_clock::now();
+
+    // Llamamos a la función cuya ejecución queremos medir
+    ejemploFuncion();
+
+    // Capturamos el tiempo de finalización
+    auto fin = high_resolution_clock::now();
+
+    // Calculamos la duración de la ejecución
+    auto duracion = duration_cast<microseconds>(fin - inicio);
+
+    // Mostramos el tiempo de ejecución en microsegundos
+    cout << "Tiempo de ejecución: " << duracion.count() << " microsegundos" << endl;
+
+    return 0;
+}
