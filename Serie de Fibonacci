@@ -1,0 +1,38 @@
+  GNU nano 7.2                                           ProAct8.cpp
+#include <iostream>
+using namespace std;
+
+void fibonacci(int n) {
+    long long a = 0, b = 1, c;
+
+    // Si el número de términos es mayor que 0, muestra el primer término
+    if (n >= 1) cout << a << " ";
+
+    // Si el número de términos es mayor que 1, muestra el segundo término
+    if (n >= 2) cout << b << " ";
+
+    // Calcular e imprimir los términos restantes de la serie de Fibonacci
+    for (int i = 3; i <= n; ++i) {
+        c = a + b; // La suma de los dos términos anteriores
+        cout << c << " ";
+        a = b; // Actualiza 'a' para el siguiente ciclo
+        b = c; // Actualiza 'b' para el siguiente ciclo
+    }
+
+    cout << endl;
+}
+
+int main() {
+    int n;
+    cout << "Introduce el número de términos para la serie de Fibonacci: ";
+ cin >> n;
+
+    if (n <= 0) {
+        cout << "Por favor ingresa un número mayor que 0." << endl;
+    } else {
+        cout << "Serie de Fibonacci hasta " << n << " términos: ";
+        fibonacci(n);
+    }
+
+    return 0;
+}
