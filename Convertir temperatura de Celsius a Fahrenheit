@@ -1,0 +1,21 @@
+  GNU nano 7.2                                           ProAct1.cpp                                                    #include <iostream>
+using namespace std;
+
+// Función para convertir Celsius a Fahrenheit
+float celsiusAFahrenheit(float celsius) {
+    return (celsius * 9.0 / 5.0) + 32.0;
+}
+
+int main() {
+    float celsius;
+
+    // Solicita al usuario la temperatura en Celsius
+    cout << "Ingrese la temperatura en Celsius: ";
+    cin >> celsius;
+
+    // Llama a la función y muestra el resultado
+    float fahrenheit = celsiusAFahrenheit(celsius);
+    cout << "Temperatura en Fahrenheit: " << fahrenheit << endl;
+
+    return 0;
+}
