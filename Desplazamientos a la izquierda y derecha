@@ -1,0 +1,32 @@
+  GNU nano 7.2                                           ProAct27.cpp                                                     #include <iostream>
+#include <bitset>  // Asegúrate de incluir la cabecera <bitset>
+
+using namespace std;
+
+int main() {
+    int num, posiciones;
+
+    // Pedir al usuario un número y el número de posiciones para el desplazamiento
+    cout << "Introduce un número: ";
+    cin >> num;
+
+    cout << "Introduce el número de posiciones para el desplazamiento: ";
+    cin >> posiciones;
+
+    // Desplazamiento a la izquierda
+    int desplazamientoIzquierda = num << posiciones;
+    // Desplazamiento a la derecha
+    int desplazamientoDerecha = num >> posiciones;
+
+    // Mostrar los resultados
+    cout << "Número original: " << num << endl;
+    cout << "Desplazamiento a la izquierda (<<): " << desplazamientoIzquierda << endl;
+    cout << "Desplazamiento a la derecha (>>): " << desplazamientoDerecha << endl;
+
+    // Opcional: Mostrar los resultados en formato binario
+    cout << "Número original en binario: " << bitset<32>(num) << endl;
+    cout << "Desplazamiento a la izquierda en binario: " << bitset<32>(desplazamientoIzquierda) << endl;
+    cout << "Desplazamiento a la derecha en binario: " << bitset<32>(desplazamientoDerecha) << endl;
+
+    return 0;
+}
