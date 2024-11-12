@@ -1,0 +1,25 @@
+  GNU nano 7.2                                           ProAct23.cpp
+#include <iostream>
+using namespace std;
+
+int main() {
+    int numero;
+
+    // Pedir al usuario que ingrese un número entero
+    cout << "Introduce un número entero (entre 0 y 255): ";
+    cin >> numero;
+
+    // Verificar que el número esté dentro del rango válido para caracteres ASCII
+    if (numero < 0 || numero > 255) {
+        cout << "Error: El número debe estar entre 0 y 255." << endl;
+        return 1;
+    }
+
+    // Convertir el número entero a su correspondiente carácter ASCII
+    char caract = (char)numero;
+
+    // Mostrar el resultado
+    cout << "El número entero " << numero << " corresponde al carácter ASCII: '" << caract << "'" << endl;
+
+    return 0;
+}
