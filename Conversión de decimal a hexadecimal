@@ -1,0 +1,41 @@
+  GNU nano 7.2                                           ProAct41.cpp                                                     #include <iostream>
+#include <string>
+#include <algorithm>  // Para usar std::reverse
+using namespace std;
+
+// Función para convertir un número decimal a hexadecimal
+string decimalAHexadecimal(int num) {
+    if (num == 0) {
+        return "0";  // Si el número es 0, el hexadecimal es 0
+    }
+
+    string hex = "";  // Cadena para almacenar el valor hexadecimal
+    char hexChars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
+    // Realizar las divisiones sucesivas por 16
+    while (num > 0) {
+        int remainder = num % 16;  // Obtener el resto de la división entre 16
+        hex += hexChars[remainder];  // Añadir el caracter correspondiente al resto
+        num /= 16;  // Dividir el número entre 16
+    }
+
+    // El resultado está en orden inverso, por lo que lo revertimos
+    reverse(hex.begin(), hex.end());
+
+    return hex;
+}
+int main() {
+    int numero;
+
+    // Solicitar al usuario que ingrese un número decimal
+    cout << "Introduce un número decimal: ";
+    cin >> numero;
+
+    // Convertir el número decimal a hexadecimal
+    string hexadecimal = decimalAHexadecimal(numero);
+
+    // Mostrar el resultado
+    cout << "El número decimal " << numero << " en hexadecimal es: " << hexadecimal << endl;
+
+    return 0;
+}
