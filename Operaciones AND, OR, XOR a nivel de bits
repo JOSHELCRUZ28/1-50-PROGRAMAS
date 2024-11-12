@@ -1,0 +1,26 @@
+  GNU nano 7.2                                           ProAct26.cpp                                                     #include <iostream>
+#include <bitset>  // Incluir la cabecera bitset para trabajar con bitset
+
+using namespace std;
+
+int main() {
+    int A, B;
+
+    // Pedir al usuario que ingrese dos números
+    cout << "Introduce el primer número (A): ";
+    cin >> A;
+    cout << "Introduce el segundo número (B): ";
+    cin >> B;
+
+    // Operaciones AND, OR y XOR
+    int resultadoAND = A & B;
+    int resultadoOR = A | B;
+    int resultadoXOR = A ^ B;
+
+    // Mostrar los resultados en formato binario
+    cout << "Resultado de A & B (AND) = " << resultadoAND << " (binario: " << bitset<8>(resultadoAND) << ")" << endl;
+    cout << "Resultado de A | B (OR) = " << resultadoOR << " (binario: " << bitset<8>(resultadoOR) << ")" << endl;
+    cout << "Resultado de A ^ B (XOR) = " << resultadoXOR << " (binario: " << bitset<8>(resultadoXOR) << ")" << endl;
+
+    return 0;
+}
