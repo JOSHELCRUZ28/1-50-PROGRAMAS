@@ -1,0 +1,49 @@
+  GNU nano 7.2                                           ProAct29.cpp
+#include <iostream>
+using namespace std;
+
+// Método simple para contar los bits activados
+int contarBitsActivos(int num) {
+    int contador = 0;
+
+    // Recorremos todos los bits del número
+    while (num) {
+        // Incrementamos el contador si el bit más bajo es 1
+        contador += (num & 1);
+
+        // Desplazamos el número un bit a la derecha
+        num >>= 1;
+    }
+
+    return contador;
+}
+
+// Método eficiente (Brian Kernighan's Algorithm)
+int contarBitsActivosEficiente(int num) {
+    int contador = 0;
+
+    while (num) {
+        // Apagamos el bit más bajo activado
+        num = num & (num - 1);
+        contador++;
+    }
+
+    return contador;
+}
+
+int main() {
+    int num;
+
+    cout << "Introduce un número entero: ";
+    cin >> num;
+
+    // Método simple
+    int bitsActivos = contarBitsActivos(num);
+    cout << "Número de bits activados (método simple): " << bitsActivos << endl;
+
+    // Método eficiente
+    int bitsActivosEficiente = contarBitsActivosEficiente(num);
+    cout << "Número de bits activados (método eficiente): " << bitsActivosEficiente << endl;
+
+    return 0;
+}
