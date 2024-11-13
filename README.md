@@ -14,3 +14,9 @@ https://asciinema.org/a/689402
 //
 21 al 30
 https://asciinema.org/a/689408
+
+
+
+//
+31 al 40
+https://asciinema.org/a/689414
