@@ -1,0 +1,139 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        int[] arreglo = { 1, 2, 3, 4, 5 };  // Arreglo de ejemplo
+        int desplazamientos = 2;  // Número de posiciones a rotar a la izquierda
+        
+        // Llamar a la función para rotar el arreglo a la izquierda
+        RotarIzquierda(arreglo, desplazamientos);
+        
+        Console.WriteLine("Arreglo después de rotar a la izquierda:");
+        foreach (int elemento in arreglo)
+        {
+            Console.Write(elemento + " ");
+        }
+    }
+
+    static void RotarIzquierda(int[] arreglo, int desplazamientos)
+    {
+        int n = arreglo.Length;
+        // Asegurarse de que los desplazamientos no sean mayores que la longitud del arreglo
+        desplazamientos = desplazamientos % n;
+
+        // Crear un arreglo temporal para almacenar los elementos rotados
+        int[] temp = new int[desplazamientos];
+        
+        // Copiar los primeros "desplazamientos" elementos al arreglo temporal
+        Array.Copy(arreglo, 0, temp, 0, desplazamientos);
+
+        // Desplazar los elementos del arreglo original a la izquierda
+        Array.Copy(arreglo, desplazamientos, arreglo, 0, n - desplazamientos);
+
+        // Copiar los elementos del arreglo temporal al final del arreglo original
+        Array.Copy(temp, 0, arreglo, n - desplazamientos, desplazamientos);
+    }
+}
+*/
+.data
+    array:          .word   1, 2, 3, 4, 5
+    size:           .word   5
+    rotaciones:     .word   2
+    msg_orig:       .string "Arreglo original:\n"
+    msg_rot:        .string "\nArreglo rotado %d posiciones a la izquierda:\n"
+    msg_num:        .string "%d "
+    msg_nl:         .string "\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir mensaje inicial
+    adr     x0, msg_orig
+    bl      printf
+
+    // Mostrar arreglo original
+    adr     x19, array       // x19 = dirección del array
+    adr     x20, size
+    ldr     w20, [x20]       // w20 = tamaño
+    adr     x21, rotaciones
+    ldr     w21, [x21]       // w21 = número de rotaciones
+    mov     w22, #0          // w22 = índice
+
+print_original:
+    cmp     w22, w20
+    bge     start_rotation
+
+    ldr     w1, [x19, w22, SXTW 2]
+    adr     x0, msg_num
+    bl      printf
+
+    add     w22, w22, #1
+    b       print_original
+
+start_rotation:
+    mov     w22, #0          // r = 0
+
+rotation_loop:
+    cmp     w22, w21         // Comparar con número de rotaciones
+    bge     print_rotated
+
+    // Guardar primer elemento
+    ldr     w23, [x19]       // temp = array[0]
+    mov     w24, #0          // i = 0
+
+shift_loop:
+    add     w25, w24, #1     // i + 1
+    cmp     w25, w20         // Comparar con tamaño
+    bge     store_temp
+
+    // Desplazar elemento
+    ldr     w26, [x19, w25, SXTW 2]    // Cargar array[i+1]
+    str     w26, [x19, w24, SXTW 2]    // array[i] = array[i+1]
+
+    add     w24, w24, #1     // i++
+    b       shift_loop
+
+store_temp:
+    sub     w27, w20, #1     // tamaño - 1
+    str     w23, [x19, w27, SXTW 2]    // array[size-1] = temp
+
+    add     w22, w22, #1     // r++
+    b       rotation_loop
+
+print_rotated:
+    // Imprimir mensaje
+    adr     x0, msg_rot
+    mov     w1, w21          // número de rotaciones
+    bl      printf
+
+    // Mostrar arreglo rotado
+    mov     w22, #0          // Reset índice
+
+print_final:
+    cmp     w22, w20
+    bge     done
+
+    ldr     w1, [x19, w22, SXTW 2]
+    adr     x0, msg_num
+    bl      printf
+
+    add     w22, w22, #1
+    b       print_final
+
+done:
+    adr     x0, msg_nl
+    bl      printf
+
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
