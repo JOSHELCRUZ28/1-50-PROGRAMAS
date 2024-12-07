@@ -1,0 +1,72 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Ingresar el primer número
+        Console.WriteLine("Ingrese el primer número:");
+        double num1 = Convert.ToDouble(Console.ReadLine());
+
+        // Ingresar el segundo número
+        Console.WriteLine("Ingrese el segundo número:");
+        double num2 = Convert.ToDouble(Console.ReadLine());
+
+        // Comprobar si el segundo número no es cero para evitar división por cero
+        if (num2 == 0)
+        {
+            Console.WriteLine("Error: No se puede dividir por cero.");
+        }
+        else
+        {
+            // Realizar la división
+            double resultado = Dividir(num1, num2);
+
+            // Mostrar el resultado
+            Console.WriteLine($"El resultado de {num1} / {num2} es: {resultado}");
+        }
+    }
+
+    // Método para dividir dos números
+    static double Dividir(double a, double b)
+    {
+        return a / b;
+    }
+}
+*/
+.data
+    fmt_str:    .string "La división de %d entre %d es: %d con residuo %d\n"
+    num1:       .word 50
+    num2:       .word 4
+
+.text
+.global main
+
+main:
+    // Prólogo
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Cargar números
+    adr     x0, num1
+    ldr     w1, [x0]
+    adr     x0, num2
+    ldr     w2, [x0]
+
+    // Realizar división
+    sdiv    w3, w1, w2      // Cociente
+    msub    w4, w3, w2, w1  // Residuo
+
+    // Imprimir resultado
+    adr     x0, fmt_str
+    bl      printf
+
+    // Epílogo
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
