@@ -1,0 +1,96 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Ingresar el número para calcular su factorial
+        Console.WriteLine("Ingrese un número para calcular su factorial:");
+        int numero = Convert.ToInt32(Console.ReadLine());
+
+        // Verificar que el número sea no negativo
+        if (numero < 0)
+        {
+            Console.WriteLine("El factorial no está definido para números negativos.");
+        }
+        else
+        {
+            // Calcular el factorial
+            long factorial = CalcularFactorial(numero);
+
+            // Mostrar el resultado
+            Console.WriteLine($"El factorial de {numero} es: {factorial}");
+        }
+    }
+
+    // Método para calcular el factorial de un número
+    static long CalcularFactorial(int n)
+    {
+        long resultado = 1;
+
+        // Calcular el factorial usando un ciclo
+        for (int i = 1; i <= n; i++)
+        {
+            resultado *= i;  // Multiplicar por cada número desde 1 hasta n
+        }
+
+        return resultado;
+    }
+}
+*/
+.data
+    msg_start:  .string "Los primeros %d números de Fibonacci son: "
+    msg_num:    .string "%d "
+    msg_nl:     .string "\n"
+    n:          .word 10
+
+.text
+.global main
+
+main:
+    // Prólogo
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir mensaje inicial
+    adr     x0, msg_start
+    adr     x1, n
+    ldr     w1, [x1]
+    bl      printf
+
+    // Inicializar variables
+    mov     w19, #0          // w19 = a
+    mov     w20, #1          // w20 = b
+    mov     w21, #0          // w21 = i
+    adr     x22, n
+    ldr     w22, [x22]       // w22 = n
+
+loop:
+    cmp     w21, w22         // Comparar i con n
+    bge     done            // Si i >= n, terminar
+
+    // Imprimir número actual
+    adr     x0, msg_num
+    mov     w1, w19          // a
+    bl      printf
+
+    // Calcular siguiente número
+    mov     w23, w19         // temp = a
+    mov     w19, w20         // a = b
+    add     w20, w23, w20    // b = temp + b
+
+    add     w21, w21, #1     // i++
+    b       loop
+
+done:
+    // Imprimir nueva línea
+    adr     x0, msg_nl
+    bl      printf
+
+    // Epílogo
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
