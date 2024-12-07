@@ -1,0 +1,77 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Ingresar el valor de N
+        Console.WriteLine("Ingrese el valor de N:");
+        int N = Convert.ToInt32(Console.ReadLine());
+
+        // Comprobar si N es un número positivo
+        if (N <= 0)
+        {
+            Console.WriteLine("Por favor, ingrese un número mayor que 0.");
+        }
+        else
+        {
+            // Calcular la suma de los primeros N números naturales
+            int suma = SumarNumerosNaturales(N);
+
+            // Mostrar el resultado
+            Console.WriteLine($"La suma de los primeros {N} números naturales es: {suma}");
+        }
+    }
+
+    // Método para sumar los primeros N números naturales
+    static int SumarNumerosNaturales(int N)
+    {
+        int suma = 0;
+        for (int i = 1; i <= N; i++)
+        {
+            suma += i;  // Agregar cada número de 1 a N
+        }
+        return suma;
+    }
+}
+*/
+.data
+    fmt_str: .string "La suma de los primeros %d números naturales es: %d\n"
+    n:       .word 10
+
+.text
+.global main
+
+main:
+    // Prólogo
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Inicializar variables
+    adr     x0, n
+    ldr     w19, [x0]        // w19 = n
+    mov     w20, #0          // w20 = suma
+    mov     w21, #1          // w21 = i = 1
+
+loop:
+    cmp     w21, w19         // Comparar i con n
+    bgt     done            // Si i > n, terminar
+
+    add     w20, w20, w21    // suma += i
+    add     w21, w21, #1     // i++
+    b       loop
+
+done:
+    // Imprimir resultado
+    adr     x0, fmt_str
+    mov     w1, w19          // n
+    mov     w2, w20          // suma
+    bl      printf
+
+    // Epílogo
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
