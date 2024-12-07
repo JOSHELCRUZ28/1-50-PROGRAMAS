@@ -1,0 +1,81 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        int[] arr = { 5, 3, 8, 1, 9, 4, 2 };
+
+        // Encontrar el mínimo utilizando LINQ
+        int min = arr.Min();
+
+        Console.WriteLine("El valor mínimo en el arreglo es: " + min);
+    }
+}
+*/
+
+.data 
+    array:      .word   42, 23, 16, 15, 8, 4
+    size:       .word   6
+    msg_array:  .string "Arreglo: "
+    msg_num:    .string "%d "
+    msg_min:    .string "\nEl valor mínimo es: %d\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!  // Guardar el marco de pila
+    mov     x29, sp
+
+    // Imprimir arreglo
+    adr     x0, msg_array
+    bl      printf
+
+    // Mostrar elementos
+    adr     x19, array       // x19 = dirección del array
+    adr     x20, size        // x20 = dirección de la variable 'size'
+    ldr     w20, [x20]       // w20 = tamaño del arreglo
+    mov     w21, #0          // w21 = índice
+
+print_loop:
+    cmp     w21, w20
+    bge     find_min
+
+    ldr     w1, [x19, w21, SXTW 2]  // Cargar valor del arreglo en w1
+    adr     x0, msg_num
+    bl      printf
+
+    add     w21, w21, #1
+    b       print_loop
+
+find_min:
+    ldr     w22, [x19]       // w22 = mínimo inicial (primer valor)
+    mov     w21, #1          // Resetear índice a 1
+
+min_loop:
+    cmp     w21, w20
+    bge     print_min        // Si el índice es mayor o igual que el tamaño, saltar a imprimir el mínimo
+
+    ldr     w23, [x19, w21, SXTW 2]  // Cargar valor del arreglo en w23
+    cmp     w23, w22         // Comparar si el valor actual es menor que el mínimo
+    bge     skip_update      // Si no es menor, saltar a la siguiente iteración
+
+    mov     w22, w23         // Actualizar el valor mínimo
+
+skip_update:
+    add     w21, w21, #1     // Incrementar el índice
+    b       min_loop         // Volver al inicio del bucle
+
+print_min:
+    adr     x0, msg_min
+    mov     w1, w22
+    bl      printf
+
+    mov     w0, #0           // Retorno 0
+    ldp     x29, x30, [sp], #16  // Restaurar el marco de pila
+    ret
