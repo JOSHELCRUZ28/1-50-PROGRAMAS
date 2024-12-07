@@ -3,28 +3,28 @@
 
 //
 1 al 10
-https://asciinema.org/a/689398
+https://asciinema.org/a/693837
 
 
 
 //
 11 al 20
-https://asciinema.org/a/689402
+https://asciinema.org/a/693838
 
 
 
 //
 21 al 30
-https://asciinema.org/a/689408
+https://asciinema.org/a/693839
 
 
 
 //
 31 al 40
-https://asciinema.org/a/689414
+https://asciinema.org/a/693840
 
 
 
 //
 41 al 50
-https://asciinema.org/a/689420
+https://asciinema.org/a/693841
