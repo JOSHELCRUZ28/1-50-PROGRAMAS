@@ -1,0 +1,99 @@
+ GNU nano 7.2                                              pro.s
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Ingresar temperatura en Celsius
+        Console.WriteLine("Ingrese la temperatura en grados Celsius:");
+        double celsius = Convert.ToDouble(Console.ReadLine());
+
+        // Convertir a Fahrenheit
+        double fahrenheit = CelsiusToFahrenheit(celsius);
+
+        // Mostrar el resultado
+        Console.WriteLine($"{celsius}°C es igual a {fahrenheit}°F");
+    }
+
+    static double CelsiusToFahrenheit(double celsius)
+    {
+        return (celsius * 9 / 5) + 32;
+    }
+}
+
+*/
+.section .rodata
+    input_msg:  .asciz "Ingrese la temperatura en grados Celsius: \n"
+    output_msg: .asciz "%.2f °C es igual a %.2f °F\n"
+    format:     .asciz "%lf"
+    const_9:    .double 9.0
+    const_5:    .double 5.0
+    const_32:   .double 32.0
+
+.text
+.global main
+.type main, %function
+.extern printf
+.extern scanf
+
+main:
+    // Prólogo - preparar el stack frame
+    stp     x29, x30, [sp, #-48]!
+    mov     x29, sp
+
+    // Reservar espacio en el stack para los valores de temperatura
+    sub     sp, sp, #16
+
+    // Imprimir mensaje de entrada
+     adrp    x0, input_msg
+    add     x0, x0, :lo12:input_msg
+    bl      printf
+
+    // Preparar para leer la temperatura
+    adrp    x0, format
+    add     x0, x0, :lo12:format
+    add     x1, x29, #32  // dirección para guardar el valor de entrada
+    bl      scanf
+
+    // Cargar valor de Celsius desde la memoria
+    ldr     d0, [x29, #32]
+
+    // Cargar constantes
+    adrp    x4, const_9
+    add     x4, x4, :lo12:const_9
+    ldr     d1, [x4]
+
+    adrp    x4, const_5
+    add     x4, x4, :lo12:const_5
+    ldr     d2, [x4]
+
+    adrp    x4, const_32
+     ldr     d3, [x4]
+
+    // Multiplicar Celsius * 9
+    fmul    d4, d0, d1
+
+    // Dividir por 5
+    fdiv    d4, d4, d2
+
+    // Sumar 32
+    fadd    d4, d4, d3
+
+    // Preparar argumentos para printf
+    adrp    x0, output_msg
+    add     x0, x0, :lo12:output_msg
+    fmov    d1, d0     // Celsius
+    fmov    d2, d4     // Fahrenheit
+    bl      printf
+
+    // Limpiar stack y retornar
+    mov     x0, #0
+    add     sp, sp, #16
+    ldp     x29, x30, [sp], #48
+    ret
+.size main, .-main
