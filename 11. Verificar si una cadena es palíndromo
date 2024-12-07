@@ -1,0 +1,101 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+class PalindromeCheck
+{
+    public static bool IsPalindrome(string str)
+    {
+        // Convertir la cadena a minúsculas y quitar espacios en blanco
+        str = str.Replace(" ", "").ToLower();
+
+        int left = 0;
+        int right = str.Length - 1;
+
+        // Comparar los caracteres desde los extremos hacia el centro
+        while (left < right)
+        {
+            if (str[left] != str[right])
+            {
+                return false; // Si los caracteres no coinciden, no es un palíndromo
+            }
+
+            left++;
+            right--;
+        }
+
+        return true; // Si todos los caracteres coinciden, es un palíndromo
+    }
+
+    static void Main()
+    {
+        Console.WriteLine("Ingrese una cadena:");
+        string input = Console.ReadLine();
+
+        if (IsPalindrome(input))
+        {
+            Console.WriteLine("La cadena es un palíndromo.");
+        }
+        else
+        {
+            Console.WriteLine("La cadena no es un palíndromo.");
+        }
+    }
+}
+*/
+
+.data
+    texto:          .string "reconocer"
+    msg_es:         .string "La palabra '%s' es un palíndromo\n"
+    msg_no_es:      .string "La palabra '%s' no es un palíndromo\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Calcular longitud
+    adr     x19, texto       // x19 = dirección del texto
+    mov     x20, #0          // x20 = longitud
+
+strlen_loop:
+    ldrb    w21, [x19, x20]  // Cargar byte
+    cbz     w21, check_palin // Si es 0, iniciar verificación
+    add     x20, x20, #1     // longitud++
+    b       strlen_loop
+
+check_palin:
+    mov     x21, #0          // x21 = inicio
+    sub     x20, x20, #1     // x20 = fin (longitud - 1)
+
+compare_loop:
+    cmp     x21, x20         // Comparar inicio con fin
+    bge     es_palindromo    // Si inicio >= fin, es palíndromo
+
+    ldrb    w22, [x19, x21]  // Cargar carácter del inicio
+    ldrb    w23, [x19, x20]  // Cargar carácter del fin
+    cmp     w22, w23         // Comparar caracteres
+    bne     no_palindromo    // Si son diferentes, no es palíndromo
+
+    add     x21, x21, #1     // Incrementar inicio
+    sub     x20, x20, #1     // Decrementar fin
+    b       compare_loop
+
+es_palindromo:
+    adr     x0, msg_es
+    mov     x1, x19
+    bl      printf
+    b       done
+
+no_palindromo:
+    adr     x0, msg_no_es
+    mov     x1, x19
+    bl      printf
+
+done:
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
