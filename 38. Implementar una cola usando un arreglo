@@ -1,0 +1,270 @@
+
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Cola
+{
+    private int[] arreglo;
+    private int frente; // Índice del primer elemento
+    private int final;  // Índice del último elemento
+    private int capacidad;
+    private int tamanoActual; // Número actual de elementos en la cola
+
+    public Cola(int capacidad)
+    {
+        this.capacidad = capacidad;
+        arreglo = new int[capacidad];
+        frente = 0;
+        final = -1;
+        tamanoActual = 0;
+    }
+
+    // Método para agregar un elemento a la cola
+    public void Encolar(int elemento)
+    {
+        if (EstaLlena())
+        {
+            Console.WriteLine("Error: La cola está llena.");
+            return;
+        }
+        final = (final + 1) % capacidad; // Incremento circular del índice
+        arreglo[final] = elemento;
+        tamanoActual++;
+    }
+
+    // Método para eliminar un elemento de la cola
+    public int Desencolar()
+    {
+        if (EstaVacia())
+        {
+            Console.WriteLine("Error: La cola está vacía.");
+            return int.MinValue; // Valor de error
+        }
+        int elemento = arreglo[frente];
+        frente = (frente + 1) % capacidad; // Incremento circular del índice
+        tamanoActual--;
+        return elemento;
+    }
+
+    // Método para ver el elemento en el frente sin eliminarlo
+    public int VerFrente()
+    {
+        if (EstaVacia())
+        {
+            Console.WriteLine("Error: La cola está vacía.");
+            return int.MinValue; // Valor de error
+        }
+        return arreglo[frente];
+    }
+
+    // Método para verificar si la cola está vacía
+    public bool EstaVacia()
+    {
+        return tamanoActual == 0;
+    }
+
+    // Método para verificar si la cola está llena
+    public bool EstaLlena()
+    {
+        return tamanoActual == capacidad;
+    }
+
+    // Método para mostrar los elementos de la cola
+    public void Mostrar()
+    {
+        if (EstaVacia())
+        {
+            Console.WriteLine("La cola está vacía.");
+            return;
+        }
+        Console.WriteLine("Elementos en la cola:");
+        for (int i = 0; i < tamanoActual; i++)
+        {
+            int indice = (frente + i) % capacidad; // Cálculo circular
+            Console.WriteLine(arreglo[indice]);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Cola cola = new Cola(5); // Crear una cola con capacidad 5
+
+        // Pruebas
+        cola.Encolar(10);
+        cola.Encolar(20);
+        cola.Encolar(30);
+        cola.Mostrar();
+
+        Console.WriteLine("Elemento en el frente: " + cola.VerFrente());
+
+        Console.WriteLine("Elemento eliminado: " + cola.Desencolar());
+        cola.Mostrar();
+
+        cola.Encolar(40);
+        cola.Encolar(50);
+        cola.Encolar(60);
+        cola.Encolar(70); // Intento de desbordamiento
+        cola.Mostrar();
+
+        Console.WriteLine("¿Está llena? " + cola.EstaLlena());
+    }
+}
+*/
+.data
+    queue:          .skip   20          // Espacio para 5 enteros
+    front:          .word   -1
+    rear:           .word   -1
+    size:           .word   5
+    msg_enq:        .string "Enqueue: %d\n"
+    msg_deq:        .string "Dequeue: %d\n"
+    msg_full:       .string "Error: Cola llena\n"
+    msg_empty:      .string "Error: Cola vacía\n"
+
+.text
+.global main
+
+// Función enqueue (x0 = valor a insertar)
+enqueue:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Verificar si la cola está llena
+    adr     x1, rear
+    ldr     w2, [x1]                 // w2 = rear
+    adr     x3, size
+    ldr     w3, [x3]
+    sub     w3, w3, #1               // w3 = size - 1
+    
+    cmp     w2, w3
+    bge     queue_full
+    
+    // Si front es -1, inicializarlo
+    adr     x3, front
+    ldr     w4, [x3]
+    cmp     w4, #-1
+    bne     skip_front
+    mov     w4, #0
+    str     w4, [x3]
+
+skip_front:
+    // Incrementar rear y guardar valor
+    add     w2, w2, #1               // rear++
+    str     w2, [x1]                 // Actualizar rear
+    
+    // Guardar valor en queue
+    adr     x1, queue
+    str     w0, [x1, w2, SXTW 2]
+    
+    // Imprimir mensaje
+    adr     x0, msg_enq
+    mov     w1, w0
+    bl      printf
+    
+    mov     w0, #1                   // Retorno exitoso
+    b       enqueue_end
+
+queue_full:
+    adr     x0, msg_full
+    bl      printf
+    mov     w0, #0                   // Retorno fallido
+
+enqueue_end:
+    ldp     x29, x30, [sp], #16
+    ret
+
+// Función dequeue
+dequeue:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+    
+    // Verificar si la cola está vacía
+    adr     x1, front
+    ldr     w2, [x1]                 // w2 = front
+    adr     x3, rear
+    ldr     w3, [x3]                 // w3 = rear
+    
+    cmp     w2, #-1
+    beq     queue_empty
+    cmp     w2, w3
+    bgt     queue_empty
+    
+    // Obtener valor
+    adr     x4, queue
+    ldr     w0, [x4, w2, SXTW 2]    // w0 = valor
+    
+    // Incrementar front
+    add     w2, w2, #1               // front++
+    str     w2, [x1]                 // Actualizar front
+    
+    // Si front > rear, resetear cola
+    cmp     w2, w3
+    ble     print_dequeue
+    
+    mov     w2, #-1
+    str     w2, [x1]                 // front = -1
+    adr     x1, rear
+    str     w2, [x1]                 // rear = -1
+
+print_dequeue:
+    // Imprimir mensaje
+    mov     w1, w0
+    adr     x0, msg_deq
+    bl      printf
+    
+    b       dequeue_end
+
+queue_empty:
+    adr     x0, msg_empty
+    bl      printf
+    mov     w0, #-1                  // Retorno error
+
+dequeue_end:
+    ldp     x29, x30, [sp], #16
+    ret
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Enqueue 10
+    mov     w0, #10
+    bl      enqueue
+
+    // Enqueue 20
+    mov     w0, #20
+    bl      enqueue
+
+    // Enqueue 30
+    mov     w0, #30
+    bl      enqueue
+
+    // Dequeue
+    bl      dequeue
+
+    // Enqueue 40
+    mov     w0, #40
+    bl      enqueue
+
+    // Dequeue todo
+dequeue_loop:
+    adr     x0, front
+    ldr     w0, [x0]                 // w0 = front
+    cmp     w0, #-1
+    beq     done
+    adr     x1, rear
+    ldr     w1, [x1]                 // w1 = rear
+    cmp     w0, w1
+    bgt     done
+    bl      dequeue
+    b       dequeue_loop
+
+done:
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
