@@ -1,0 +1,225 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    // Función para multiplicar dos matrices
+    static int[,] MultiplicarMatrices(int[,] matrizA, int[,] matrizB)
+    {
+        // Obtener el número de filas y columnas de las matrices
+        int filasA = matrizA.GetLength(0);
+        int columnasA = matrizA.GetLength(1);
+        int filasB = matrizB.GetLength(0);
+        int columnasB = matrizB.GetLength(1);
+
+        // Verificar si la multiplicación es posible
+        if (columnasA != filasB)
+        {
+            throw new Exception("Las matrices no se pueden multiplicar: el número de columnas de la primera matriz debe ser igual al número de filas de la segunda matriz.");
+        }
+
+        // Crear la matriz resultado con dimensiones m x p
+        int[,] resultado = new int[filasA, columnasB];
+
+        // Realizar la multiplicación
+        for (int i = 0; i < filasA; i++)
+        {
+            for (int j = 0; j < columnasB; j++)
+            {
+                for (int k = 0; k < columnasA; k++)
+                {
+                    resultado[i, j] += matrizA[i, k] * matrizB[k, j];
+                }
+            }
+        }
+
+        return resultado;
+    }
+
+    // Función para imprimir una matriz
+    static void ImprimirMatriz(int[,] matriz)
+    {
+        int filas = matriz.GetLength(0);
+        int columnas = matriz.GetLength(1);
+
+        for (int i = 0; i < filas; i++)
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+                Console.Write(matriz[i, j] + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static void Main()
+    {
+        // Definir las matrices A y B
+        int[,] matrizA = {
+            { 1, 2, 3 },
+            { 4, 5, 6 }
+        };
+
+        int[,] matrizB = {
+            { 7, 8 },
+            { 9, 10 },
+            { 11, 12 }
+        };
+
+        Console.WriteLine("Matriz A:");
+        ImprimirMatriz(matrizA);
+
+        Console.WriteLine("Matriz B:");
+        ImprimirMatriz(matrizB);
+
+        // Multiplicar las matrices
+        int[,] matrizResultado = MultiplicarMatrices(matrizA, matrizB);
+
+        Console.WriteLine("Resultado de la multiplicación de matrices:");
+        ImprimirMatriz(matrizResultado);
+    }
+}
+*/
+.data
+    // Matrices 2x2
+    matriz1:    .word   1, 2, 3, 4
+    matriz2:    .word   5, 6, 7, 8
+    resultado:  .skip   16              // 4 elementos * 4 bytes
+    size:       .word   2               // Tamaño de la matriz (2x2)
+    msg_m1:     .string "Matriz 1:\n"
+    msg_m2:     .string "Matriz 2:\n"
+    msg_res:    .string "Matriz resultante:\n"
+    msg_num:    .string "%4d "          // Formato alineado
+    msg_nl:     .string "\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir matriz1
+    adr     x0, msg_m1
+    bl      printf
+    adr     x19, matriz1
+    bl      print_matrix
+
+    // Imprimir matriz2
+    adr     x0, msg_m2
+    bl      printf
+    adr     x19, matriz2
+    bl      print_matrix
+
+    // Multiplicar matrices
+    adr     x19, matriz1     // x19 = dirección matriz1
+    adr     x20, matriz2     // x20 = dirección matriz2
+    adr     x21, resultado   // x21 = dirección resultado
+    adr     x22, size
+    ldr     w22, [x22]       // w22 = tamaño
+    mov     w23, #0          // w23 = i
+
+outer_loop:
+    cmp     w23, w22
+    bge     print_result
+    mov     w24, #0          // w24 = j
+
+middle_loop:
+    cmp     w24, w22
+    bge     outer_next
+
+    mov     w25, #0          // w25 = suma acumulada
+    mov     w26, #0          // w26 = k
+
+inner_loop:
+    cmp     w26, w22
+    bge     store_result
+
+    // Calcular índices
+    mul     w27, w23, w22    // i * size
+    add     w27, w27, w26    // + k
+    lsl     x27, x27, #2     // * 4
+
+    mul     w28, w26, w22    // k * size
+    add     w28, w28, w24    // + j
+    lsl     x28, x28, #2     // * 4
+
+    // Multiplicar elementos
+    ldr     w29, [x19, x27]  // matriz1[i][k]
+    ldr     w30, [x20, x28]  // matriz2[k][j]
+    mul     w29, w29, w30    // producto
+    add     w25, w25, w29    // suma += producto
+
+    add     w26, w26, #1     // k++
+    b       inner_loop
+
+store_result:
+    // Guardar resultado
+    mul     w27, w23, w22    // i * size
+    add     w27, w27, w24    // + j
+    lsl     x27, x27, #2     // * 4
+    str     w25, [x21, x27]  // resultado[i][j] = suma
+
+    add     w24, w24, #1     // j++
+    b       middle_loop
+
+outer_next:
+    add     w23, w23, #1     // i++
+    b       outer_loop
+
+print_result:
+    // Imprimir mensaje resultado
+    adr     x0, msg_res
+    bl      printf
+
+    // Imprimir matriz resultado
+    adr     x19, resultado
+    bl      print_matrix
+
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
+
+// Subrutina para imprimir matriz
+print_matrix:
+    stp     x29, x30, [sp, #-16]!
+    stp     x19, x20, [sp, #-16]!
+
+    mov     x20, x19         // Guardar dirección matriz
+    adr     x19, size
+    ldr     w19, [x19]       // w19 = tamaño
+    mov     w21, #0          // w21 = i
+
+print_outer:
+    cmp     w21, w19
+    bge     print_done
+    mov     w22, #0          // w22 = j
+
+print_inner:
+    cmp     w22, w19
+    bge     print_nl_cont
+
+    // Imprimir elemento
+    mul     w23, w21, w19
+    add     w23, w23, w22
+    lsl     x23, x23, #2
+    ldr     w1, [x20, x23]
+    adr     x0, msg_num
+    bl      printf
+
+    add     w22, w22, #1
+    b       print_inner
+
+print_nl_cont:
+    adr     x0, msg_nl
+    bl      printf
+    add     w21, w21, #1
+    b       print_outer
+
+print_done:
+    ldp     x19, x20, [sp], #16
+    ldp     x29, x30, [sp], #16
+    ret
