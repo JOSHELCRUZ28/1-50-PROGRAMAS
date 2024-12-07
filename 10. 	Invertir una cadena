@@ -1,0 +1,87 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Solicitar al usuario que ingrese una cadena
+        Console.WriteLine("Ingrese una cadena para invertir:");
+        string cadena = Console.ReadLine();
+
+        // Invertir la cadena
+        string cadenaInvertida = InvertirCadena(cadena);
+
+        // Mostrar la cadena invertida
+        Console.WriteLine($"Cadena original: {cadena}");
+        Console.WriteLine($"Cadena invertida: {cadenaInvertida}");
+    }
+
+    // Método para invertir una cadena
+    static string InvertirCadena(string s)
+    {
+        char[] caracteres = s.ToCharArray();  // Convertir la cadena en un arreglo de caracteres
+        Array.Reverse(caracteres);             // Invertir el arreglo de caracteres
+        return new string(caracteres);         // Convertir el arreglo invertido nuevamente en una cadena
+    }
+}
+*/
+
+.data
+    cadena:     .asciz  "Hola Mundo"   // Cadena a invertir (terminada en null)
+    longitud:   .quad   11              // Longitud de la cadena (sin incluir terminador null)
+    buffer:     .space  12              // Buffer para la cadena invertida
+
+.text
+.global main
+
+main:
+    // x0 = dirección de la cadena original
+    // x1 = dirección del buffer de destino
+    // x2 = longitud de la cadena
+    LDR     x0, =cadena      // Dirección de la cadena original
+    LDR     x1, =buffer      // Dirección del buffer de destino
+    LDR     x2, =longitud    // Dirección de la longitud
+    LDR     x2, [x2]         // Cargar longitud (11)
+
+    // Inicializar índices
+    MOV     x3, #0           // Índice de origen (desde el final)
+    MOV     x4, #0           // Índice de destino (desde el principio)
+
+    SUB     x3, x2, #1       // Comenzar desde el último índice de la cadena
+
+invertir_loop:
+    // Verificar si hemos terminado
+    CMP     x3, #0
+    BLT     fin_invertir
+
+    // Cargar carácter desde el final de la cadena
+    LDRB    w5, [x0, x3]
+    // Guardar carácter en el buffer (invertido)
+    STRB    w5, [x1, x4]
+
+    // Decrementar índice de origen y aumentar índice de destino
+    SUB     x3, x3, #1
+    ADD     x4, x4, #1
+
+    B       invertir_loop
+
+fin_invertir:
+    // Añadir terminador null al final del buffer
+    MOV     w5, #0
+    STRB    w5, [x1, x4]
+
+    // Imprimir el buffer (cadena invertida)
+    MOV     x0, #1          // 1 = STDOUT
+    LDR     x1, =buffer     // Dirección del buffer
+    LDR     x2, =longitud   // Longitud de la cadena
+    LDR     x2, [x2]
+    MOV     x8, #64         // sys_write
+    SVC     0
+
+    // Llamada al sistema para salir
+    MOV     x0, #0
+    MOV     x8, #93         // sys_exit
+    SVC     0
