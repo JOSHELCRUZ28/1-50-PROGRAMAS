@@ -1,0 +1,85 @@
+
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+using System.Diagnostics;
+
+class Program
+{
+    static void Main()
+    {
+        // Crear un objeto Stopwatch
+        Stopwatch stopwatch = new Stopwatch();
+
+        // Iniciar el cronómetro
+        stopwatch.Start();
+
+        // Llamar a la función que deseas medir
+        FuncionLenta();
+
+        // Detener el cronómetro
+        stopwatch.Stop();
+
+        // Mostrar el tiempo transcurrido
+        Console.WriteLine($"El tiempo de ejecución es: {stopwatch.ElapsedMilliseconds} ms");
+    }
+
+    // Ejemplo de función lenta
+    static void FuncionLenta()
+    {
+        // Simula un trabajo lento
+        System.Threading.Thread.Sleep(2000); // Espera de 2 segundos
+    }
+}
+
+*/
+
+.data
+    iterations:     .word   1000000
+    msg_start:      .string "Iniciando medición de tiempo...\n"
+    msg_end:        .string "Tiempo de ejecución: %lld ciclos\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir mensaje inicial
+    adr     x0, msg_start
+    bl      printf
+
+    // Obtener tiempo inicial
+    mrs     x19, CNTVCT_EL0    // Leer contador de ciclos
+
+    // Operación a medir
+    adr     x20, iterations
+    ldr     w20, [x20]         // w20 = número de iteraciones
+    mov     w21, #0            // w21 = contador
+
+measure_loop:
+    cmp     w21, w20
+    bge     end_measure
+
+    // Operación dummy (multiplicación)
+    mul     w22, w21, w21
+
+    add     w21, w21, #1
+    b       measure_loop
+
+end_measure:
+    // Obtener tiempo final y calcular diferencia
+    mrs     x20, CNTVCT_EL0    
+    sub     x20, x20, x19      // x20 = ciclos transcurridos
+
+    // Mostrar resultado
+    adr     x0, msg_end
+    mov     x1, x20
+    bl      printf
+
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
