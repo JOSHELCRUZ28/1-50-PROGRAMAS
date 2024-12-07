@@ -1,0 +1,192 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    // Función para sumar dos matrices
+    static int[,] SumarMatrices(int[,] matriz1, int[,] matriz2)
+    {
+        // Obtener el número de filas y columnas de las matrices
+        int filas = matriz1.GetLength(0);
+        int columnas = matriz1.GetLength(1);
+
+        // Crear una matriz para almacenar el resultado
+        int[,] resultado = new int[filas, columnas];
+
+        // Sumar las matrices elemento por elemento
+        for (int i = 0; i < filas; i++)
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+                resultado[i, j] = matriz1[i, j] + matriz2[i, j];
+            }
+        }
+
+        return resultado;
+    }
+
+    // Función para imprimir una matriz
+    static void ImprimirMatriz(int[,] matriz)
+    {
+        int filas = matriz.GetLength(0);
+        int columnas = matriz.GetLength(1);
+
+        for (int i = 0; i < filas; i++)
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+                Console.Write(matriz[i, j] + "\t");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static void Main()
+    {
+        // Definir dos matrices 2x2
+        int[,] matriz1 = {
+            { 1, 2 },
+            { 3, 4 }
+        };
+
+        int[,] matriz2 = {
+            { 5, 6 },
+            { 7, 8 }
+        };
+
+        Console.WriteLine("Matriz 1:");
+        ImprimirMatriz(matriz1);
+
+        Console.WriteLine("Matriz 2:");
+        ImprimirMatriz(matriz2);
+
+        // Sumar las matrices
+        int[,] matrizSuma = SumarMatrices(matriz1, matriz2);
+
+        Console.WriteLine("Resultado de la suma de matrices:");
+        ImprimirMatriz(matrizSuma);
+    }
+}
+*/
+.data
+    // Matrices 3x3
+    matriz1:    .word   1, 2, 3, 4, 5, 6, 7, 8, 9
+    matriz2:    .word   9, 8, 7, 6, 5, 4, 3, 2, 1
+    resultado:  .skip   36              // 9 elementos * 4 bytes
+    size:       .word   3               // Tamaño de la matriz (3x3)
+    msg_m1:     .string "Matriz 1:\n"
+    msg_m2:     .string "Matriz 2:\n"
+    msg_res:    .string "Matriz resultante:\n"
+    msg_num:    .string "%3d "          // Formato alineado
+    msg_nl:     .string "\n"
+
+.text
+.global main
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir matriz1
+    adr     x0, msg_m1
+    bl      printf
+    adr     x19, matriz1
+    bl      print_matrix
+
+    // Imprimir matriz2
+    adr     x0, msg_m2
+    bl      printf
+    adr     x19, matriz2
+    bl      print_matrix
+
+    // Sumar matrices
+    adr     x19, matriz1     // x19 = dirección matriz1
+    adr     x20, matriz2     // x20 = dirección matriz2
+    adr     x21, resultado   // x21 = dirección resultado
+    adr     x22, size
+    ldr     w22, [x22]       // w22 = tamaño
+    mov     w23, #0          // w23 = i
+
+outer_loop:
+    cmp     w23, w22
+    bge     print_result
+    mov     w24, #0          // w24 = j
+
+inner_loop:
+    cmp     w24, w22
+    bge     outer_next
+
+    // Calcular índice = i * size + j
+    mul     w25, w23, w22
+    add     w25, w25, w24
+    lsl     x25, x25, #2     // * 4 (tamaño de word)
+
+    // Sumar elementos
+    ldr     w26, [x19, x25]  // matriz1[i][j]
+    ldr     w27, [x20, x25]  // matriz2[i][j]
+    add     w28, w26, w27    // suma
+    str     w28, [x21, x25]  // resultado[i][j] = suma
+
+    add     w24, w24, #1     // j++
+    b       inner_loop
+
+outer_next:
+    add     w23, w23, #1     // i++
+    b       outer_loop
+
+print_result:
+    // Imprimir mensaje resultado
+    adr     x0, msg_res
+    bl      printf
+
+    // Imprimir matriz resultado
+    adr     x19, resultado
+    bl      print_matrix
+
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
+
+// Subrutina para imprimir matriz
+print_matrix:
+    stp     x29, x30, [sp, #-16]!
+    stp     x19, x20, [sp, #-16]!
+
+    mov     x20, x19         // Guardar dirección matriz
+    adr     x19, size
+    ldr     w19, [x19]       // w19 = tamaño
+    mov     w21, #0          // w21 = i
+
+print_outer:
+    cmp     w21, w19
+    bge     print_done
+    mov     w22, #0          // w22 = j
+
+print_inner:
+    cmp     w22, w19
+    bge     print_nl_cont
+
+    // Imprimir elemento
+    mul     w23, w21, w19
+    add     w23, w23, w22
+    lsl     x23, x23, #2
+    ldr     w1, [x20, x23]
+    adr     x0, msg_num
+    bl      printf
+
+    add     w22, w22, #1
+    b       print_inner
+
+print_nl_cont:
+    adr     x0, msg_nl
+    bl      printf
+    add     w21, w21, #1
+    b       print_outer
+
+print_done:
+    ldp     x19, x20, [sp], #16
+    ldp     x29, x30, [sp], #16
+    ret
