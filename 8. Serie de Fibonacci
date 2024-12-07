@@ -1,0 +1,105 @@
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+Código equivalente en C#:
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        // Solicitar el número de términos de la serie de Fibonacci
+        Console.WriteLine("Ingrese el número de términos de la serie de Fibonacci:");
+        int n = Convert.ToInt32(Console.ReadLine());
+
+        // Comprobar que el número ingresado es positivo
+        if (n <= 0)
+        {
+            Console.WriteLine("Por favor ingrese un número mayor que 0.");
+        }
+        else
+        {
+            // Mostrar los primeros n términos de la serie de Fibonacci
+            Console.WriteLine("Serie de Fibonacci:");
+            MostrarFibonacci(n);
+        }
+    }
+
+    // Método para mostrar los primeros n términos de la serie de Fibonacci
+    static void MostrarFibonacci(int n)
+    {
+        long a = 0, b = 1;
+
+        // Si n es 1, solo imprimir el primer término
+        if (n >= 1)
+            Console.WriteLine(a);
+
+        // Si n es mayor o igual a 2, imprimir el primer y segundo término
+        if (n >= 2)
+            Console.WriteLine(b);
+
+        // Calcular e imprimir los términos restantes
+        for (int i = 3; i <= n; i++)
+        {
+            long siguiente = a + b;  // Siguiente término de la serie
+            Console.WriteLine(siguiente);
+
+            // Actualizar los valores de a y b
+            a = b;
+            b = siguiente;
+        }
+    }
+}
+*/
+.data
+    msg_start:  .string "Los primeros %d números de Fibonacci son: "
+    msg_num:    .string "%d "
+    msg_nl:     .string "\n"
+    n:          .word 10
+
+.text
+.global main
+
+main:
+    // Prólogo
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Imprimir mensaje inicial
+    adr     x0, msg_start
+    adr     x1, n
+    ldr     w1, [x1]
+    bl      printf
+
+    // Inicializar variables
+    mov     w19, #0          // w19 = a
+    mov     w20, #1          // w20 = b
+    mov     w21, #0          // w21 = i
+    adr     x22, n
+    ldr     w22, [x22]       // w22 = n
+
+loop:
+    cmp     w21, w22         // Comparar i con n
+    bge     done            // Si i >= n, terminar
+
+    // Imprimir número actual
+    adr     x0, msg_num
+    mov     w1, w19          // a
+    bl      printf
+
+    // Calcular siguiente número
+    mov     w23, w19         // temp = a
+    mov     w19, w20         // a = b
+    add     w20, w23, w20    // b = temp + b
+
+    add     w21, w21, #1     // i++
+    b       loop
+
+done:
+    // Imprimir nueva línea
+    adr     x0, msg_nl
+    bl      printf
+
+    // Epílogo
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
