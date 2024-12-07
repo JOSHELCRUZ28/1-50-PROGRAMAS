@@ -1,0 +1,229 @@
+
+/*
+Autor: [Leon Cruz Jorge Joshel] [22210772]
+
+Código equivalente en C#:
+using System;
+
+class Pila
+{
+    private int[] arreglo;
+    private int tope; // Índice del elemento en la cima de la pila
+    private int capacidad;
+
+    public Pila(int capacidad)
+    {
+        this.capacidad = capacidad;
+        arreglo = new int[capacidad];
+        tope = -1; // Indica que la pila está vacía
+    }
+
+    // Método para insertar un elemento en la pila
+    public void Push(int elemento)
+    {
+        if (tope == capacidad - 1)
+        {
+            Console.WriteLine("Error: La pila está llena.");
+            return;
+        }
+        arreglo[++tope] = elemento; // Incrementar `tope` y agregar el elemento
+    }
+
+    // Método para eliminar el elemento en la cima de la pila
+    public int Pop()
+    {
+        if (tope == -1)
+        {
+            Console.WriteLine("Error: La pila está vacía.");
+            return int.MinValue; // Valor de error
+        }
+        return arreglo[tope--]; // Devolver y decrementar `tope`
+    }
+
+    // Método para ver el elemento en la cima sin eliminarlo
+    public int Peek()
+    {
+        if (tope == -1)
+        {
+            Console.WriteLine("Error: La pila está vacía.");
+            return int.MinValue; // Valor de error
+        }
+        return arreglo[tope];
+    }
+
+    // Método para verificar si la pila está vacía
+    public bool EstaVacia()
+    {
+        return tope == -1;
+    }
+
+    // Método para verificar si la pila está llena
+    public bool EstaLlena()
+    {
+        return tope == capacidad - 1;
+    }
+
+    // Método para mostrar los elementos de la pila
+    public void Mostrar()
+    {
+        if (tope == -1)
+        {
+            Console.WriteLine("La pila está vacía.");
+            return;
+        }
+        Console.WriteLine("Elementos en la pila:");
+        for (int i = tope; i >= 0; i--)
+        {
+            Console.WriteLine(arreglo[i]);
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Pila pila = new Pila(5); // Crear una pila con capacidad 5
+
+        // Pruebas
+        pila.Push(10);
+        pila.Push(20);
+        pila.Push(30);
+
+        pila.Mostrar();
+
+        Console.WriteLine("Elemento en la cima: " + pila.Peek());
+
+        Console.WriteLine("Elemento eliminado: " + pila.Pop());
+        pila.Mostrar();
+
+        Console.WriteLine("¿Está vacía? " + pila.EstaVacia());
+
+        pila.Push(40);
+        pila.Push(50);
+        pila.Push(60);
+        pila.Push(70); // Intento de desbordamiento
+        pila.Mostrar();
+
+        Console.WriteLine("¿Está llena? " + pila.EstaLlena());
+    }
+}
+*/
+.data
+    stack:          .skip   20          // Espacio para 5 enteros
+    top:           .word   -1
+    size:          .word   5
+    msg_push:      .string "Push: %d\n"
+    msg_pop:       .string "Pop: %d\n"
+    msg_full:      .string "Error: Pila llena\n"
+    msg_empty:     .string "Error: Pila vacía\n"
+
+.text
+.global main
+
+// Función push (x0 = valor a insertar)
+push:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Verificar si la pila está llena
+    adr     x1, top
+    ldr     w2, [x1]                 // w2 = top
+    adr     x3, size
+    ldr     w3, [x3]
+    sub     w3, w3, #1               // w3 = size - 1
+    
+    cmp     w2, w3
+    bge     stack_full
+    
+    // Incrementar top y guardar valor
+    add     w2, w2, #1               // top++
+    str     w2, [x1]                 // Actualizar top
+    
+    // Guardar valor en stack
+    adr     x1, stack
+    str     w0, [x1, w2, SXTW 2]
+    
+    // Imprimir mensaje
+    adr     x0, msg_push
+    mov     w1, w0
+    bl      printf
+    
+    mov     w0, #1                   // Retorno exitoso
+    b       push_end
+
+stack_full:
+    adr     x0, msg_full
+    bl      printf
+    mov     w0, #0                   // Retorno fallido
+
+push_end:
+    ldp     x29, x30, [sp], #16
+    ret
+
+// Función pop
+pop:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+    
+    // Verificar si la pila está vacía
+    adr     x1, top
+    ldr     w2, [x1]                 // w2 = top
+    
+    cmp     w2, #0
+    blt     stack_empty
+    
+    // Obtener valor y decrementar top
+    adr     x3, stack
+    ldr     w0, [x3, w2, SXTW 2]    // w0 = valor
+    sub     w2, w2, #1               // top--
+    str     w2, [x1]                 // Actualizar top
+    
+    // Imprimir mensaje
+    mov     w1, w0
+    adr     x0, msg_pop
+    bl      printf
+    
+    b       pop_end
+
+stack_empty:
+    adr     x0, msg_empty
+    bl      printf
+    mov     w0, #-1                  // Retorno error
+
+pop_end:
+    ldp     x29, x30, [sp], #16
+    ret
+
+main:
+    stp     x29, x30, [sp, #-16]!
+    mov     x29, sp
+
+    // Push 10
+    mov     w0, #10
+    bl      push
+
+    // Push 20
+    mov     w0, #20
+    bl      push
+
+    // Pop
+    bl      pop
+
+    // Push 30
+    mov     w0, #30
+    bl      push
+
+    // Pop todo
+pop_loop:
+    adr     x0, top
+    ldr     w0, [x0]
+    cmp     w0, #0
+    blt     done
+    bl      pop
+    b       pop_loop
+
+done:
+    mov     w0, #0
+    ldp     x29, x30, [sp], #16
+    ret
